@@ -27,7 +27,7 @@ import (
 )
 
 const (
-	defaultRoutines             = 200
+	defaultRoutines             = 1000
 	defaultPingTimes            = 10
 	udpConnectTimeout           = time.Millisecond * 1000
 	wireguardHandshakeRespBytes = 92

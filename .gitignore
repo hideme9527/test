@@ -4,3 +4,9 @@ Releases
 *.csv
 .idea
 .vscode
+/Libtest.xcframework/
+/libtest.a
+/libtest.aar
+/libtest.h
+/libtest.so
+/libtest-sources.jar

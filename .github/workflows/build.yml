@@ -1,25 +1,40 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
-
-name: Go Build
+name: Build Libraries
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+  workflow_dispatch:
 
 jobs:
-
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.20'
+      - name: Build for Linux
+        run: GOOS=linux GOARCH=amd64 go build -o libtest.so -buildmode=c-shared main.go
+        shell: bash
+        if: matrix.os == 'ubuntu-latest'
 
-    - name: Build
-      run: go build -v ./...
+      - name: Build for Windows
+        run: GOOS=windows GOARCH=amd64 go build -o libtest.dll -buildmode=c-shared main.go
+        shell: bash
+        if: matrix.os == 'windows-latest'
+
+      - name: Build for macOS
+        run: GOOS=darwin GOARCH=amd64 go build -o libtest.dylib -buildmode=c-shared main.go
+        shell: bash
+        if: matrix.os == 'macos-latest'
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: libraries
+          path: |
+            libtest.so
+            libtest.dll
+            libtest.dylib
